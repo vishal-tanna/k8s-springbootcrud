@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: vishaltanna/springbootcrud:v6
+        ports:
+        - containerPort: 8080
+        env:   # Setting Enviornmental Variables
+        - name: DB_HOST   # Setting Database host address from configMap
+          valueFrom :
+            configMapKeyRef :
+              name : db-config
+              key :  host
+        - name: DB_NAME  # Setting Database name from configMap
+          valueFrom :
+            configMapKeyRef :
+              name : db-config
+              key :  dbName
+
+        - name: DB_USERNAME  # Setting Database username from Secret
+          valueFrom :
+            secretKeyRef :
+              name : mysql-secrets
+              key :  username
+
+        - name: DB_PASSWORD # Setting Database password from Secret
+          valueFrom :
+            secretKeyRef :
+              name : mysql-secrets
+              key :  password
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  type: NodePort
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: myapp
