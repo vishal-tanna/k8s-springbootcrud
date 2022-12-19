@@ -17,8 +17,6 @@ spec:
       containers:
       - name: myapp
         image: vishaltanna/springbootcrud:v6
-        readinessProbe:
-          initialDelaySeconds: 15
         ports:
         - containerPort: 8080
         env:   # Setting Enviornmental Variables
